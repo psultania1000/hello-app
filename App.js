@@ -1,38 +1,57 @@
 import { useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, FlatList, Button } from "react-native";
 
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
+  const [modalIsVisible, setModalIsVisible] = useState(false);
   const [courseGoals, setCourseGoals] = useState([]);
 
+  function toggleAddGoalHandler() {
+    setModalIsVisible((prevState) => !prevState);
+  }
   return (
-    <View style={styles.appContainer}>
-      <GoalInput setCourseGoals={setCourseGoals} />
-      <View style={styles.goalsContainer}>
-        {/* 
+    <>
+      <StatusBar style="light" />
+      <View style={styles.appContainer}>
+        <Button
+          title="Add new goal"
+          color="#a065ec"
+          onPress={toggleAddGoalHandler}
+        />
+        {modalIsVisible && (
+          <GoalInput
+            setCourseGoals={setCourseGoals}
+            toggleAddGoalHandler={toggleAddGoalHandler}
+            setModalIsVisible={setModalIsVisible}
+          />
+        )}
+        <View style={styles.goalsContainer}>
+          {/* 
           Previously Scrollview was used look at bottom
           Now, we are using flatlist because it used kinda lazy loading to better
           optimise the codebase
-        */}
-        <FlatList
-          data={courseGoals}
-          renderItem={(itemData) => {
-            return (
-              <GoalItem
-                text={itemData.item.text}
-                setCourseGoals={setCourseGoals}
-                id={itemData.item.id}
-              />
-            );
-          }}
-          keyExtractor={(item, index) => {
-            return item.id;
-          }}
-        />
+          */}
+          <FlatList
+            data={courseGoals}
+            renderItem={(itemData) => {
+              return (
+                <GoalItem
+                  text={itemData.item.text}
+                  setCourseGoals={setCourseGoals}
+                  id={itemData.item.id}
+                />
+              );
+            }}
+            keyExtractor={(item, index) => {
+              return item.id;
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -42,6 +61,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     backgroundColor: "white",
     paddingHorizontal: 16,
+    backgroundColor: "#1e085a",
   },
 
   goalsContainer: {
