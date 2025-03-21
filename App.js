@@ -1,27 +1,36 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
+
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
 
 export default function App() {
-  const [enteredGoalText, setEnteredGoalText] = useState("");
-  function goalInputHandler(enteredText) {
-    setEnteredGoalText(enteredText);
-  }
+  const [courseGoals, setCourseGoals] = useState([]);
 
-  function addGoalHander() {
-    console.log(enteredGoalText);
-  }
   return (
     <View style={styles.appContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Your course goal!"
-          onChangeText={goalInputHandler}
-        />
-        <Button title="Add Goal!" onPress={addGoalHander} />
-      </View>
+      <GoalInput setCourseGoals={setCourseGoals} />
       <View style={styles.goalsContainer}>
-        <Text>List of goals...</Text>
+        {/* 
+          Previously Scrollview was used look at bottom
+          Now, we are using flatlist because it used kinda lazy loading to better
+          optimise the codebase
+        */}
+        <FlatList
+          data={courseGoals}
+          renderItem={(itemData) => {
+            return (
+              <GoalItem
+                text={itemData.item.text}
+                setCourseGoals={setCourseGoals}
+                id={itemData.item.id}
+              />
+            );
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+        />
       </View>
     </View>
   );
@@ -34,23 +43,30 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 16,
   },
-  inputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    borderColor: "#cccccc",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "#cccccc",
-    width: "80%",
-    // marginRight: 8,
-    padding: 8,
-  },
+
   goalsContainer: {
-    flex: 4,
+    flex: 5,
   },
 });
+
+{
+  /* <ScrollView>
+  {courseGoals.map((goal, index) => (
+
+    You can add styling goal item in Text tag as well now but
+      previously Text tag wont give same result in ios as
+      some time tweaking is needed to make it work in both platform
+      seamlessly
+      P.S.: Ofc now it works in both. But small thing to keep in mind
+     
+
+    <View style={styles.goalItem} key={index}>
+      
+              Styles does not cascade in react native 
+              i.e. text color define in parent element wont be passed into child
+             
+      <Text style={styles.goalText}>{goal}</Text>
+    </View>
+  ))}
+</ScrollView>; */
+}
